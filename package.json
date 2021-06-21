@@ -4,6 +4,10 @@
 	"description": "Collapse Rust doc-comments easily.",
 	"version": "0.0.1",
 	"publisher": "LaciSap",
+	"repository": {
+		"type": "git",
+   		"url": "https://github.com/wCheddar/DocCol.git"
+	},
 	"engines": {
 		"vscode": "^1.57.0"
 	},
