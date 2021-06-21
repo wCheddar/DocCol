@@ -10,14 +10,19 @@
 		"Other"
 	],
 	"activationEvents": [
-		"onCommand:doccol.helloWorld"
+		"onCommand:doccol.collapseDocs",
+		"onCommand:doccol.expandDocs"
 	],
 	"main": "./dist/extension.js",
 	"contributes": {
 		"commands": [
 			{
-				"command": "doccol.helloWorld",
-				"title": "Hello World"
+				"command": "doccol.collapseDocs",
+				"title": "Collapse Docs"
+			},
+			{
+				"command": "doccol.expandDocs",
+				"title": "Expand Docs"
 			}
 		]
 	},
@@ -47,5 +52,8 @@
 		"ts-loader": "^9.2.2",
 		"webpack": "^5.38.1",
 		"webpack-cli": "^4.7.0"
-	}
+	},
+	"dependencies": {
+        "vscode-extension-common": "file:../vscode-extension-common"
+    }
 }

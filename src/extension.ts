@@ -1,26 +1,80 @@
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
 
-// this method is called when your extension is activated
-// your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
-	
-	// Use the console to output diagnostic information (console.log) and errors (console.error)
-	// This line of code will only be executed once when your extension is activated
-	console.log('Congratulations, your extension "doccol" is now active!');
 
-	// The command has been defined in the package.json file
-	// Now provide the implementation of the command with registerCommand
-	// The commandId parameter must match the command field in package.json
-	let disposable = vscode.commands.registerCommand('doccol.helloWorld', () => {
-		// The code you place here will be executed every time your command is executed
-		// Display a message box to the user
-		vscode.window.showInformationMessage('Hello World from DocCol!');
+	let collapseDocs = vscode.commands.registerCommand('doccol.collapseDocs', () => {
+		const docLines = findDocs();
+		const docStarts = getStartOfGroups(docLines);
+		collapseAll(docStarts, 0);
 	});
 
-	context.subscriptions.push(disposable);
+	let expandDocs = vscode.commands.registerCommand('doccol.expandDocs', () => {
+		const docLines = findDocs();
+		const docStarts = getStartOfGroups(docLines);
+		expandAll(docStarts, 0);
+	});
+
+	context.subscriptions.push(collapseDocs);
+	context.subscriptions.push(expandDocs);
 }
 
-// this method is called when your extension is deactivated
+function findDocs(): Array<number> {
+	var lineNumbers = Array();
+	const textEditor = vscode.window.activeTextEditor;
+	if (textEditor !== undefined) {
+		for (const lineNumber of Array.from(Array(textEditor.document.lineCount).keys())) {
+			const line = textEditor.document.lineAt(lineNumber);
+
+			if (line.text.trimLeft().startsWith("///") || line.text.startsWith("//!")) {
+				lineNumbers.push(lineNumber + 1);
+			}
+		}
+	}
+	return lineNumbers;
+}
+
+function getStartOfGroups(lines: Array<number>): Array<number> {
+	var lineNumbers = Array();
+
+	lineNumbers.push(lines[0]);
+
+	for (let i = 0; i < lines.length - 1; i++) {
+		let current: number = lines[i];
+		let next: number = lines[i + 1];
+
+		if (current + 1 !== next) {
+			lineNumbers.push(next);
+		}
+	}
+	return lineNumbers;
+}
+
+function collapseAll(lines: Array<number>, index: number) {
+	const textEditor = vscode.window.activeTextEditor;
+	if (textEditor !== undefined) {
+		const lineNumber = lines[index];
+		textEditor.selection = new vscode.Selection(lineNumber, 0, lineNumber, 0);
+		vscode.commands.executeCommand('editor.unfold').then(() => {
+			vscode.commands.executeCommand('editor.fold').then(() => {
+				if (index < lines.length - 1) {
+					collapseAll(lines, index + 1);
+				}
+			});
+		});
+	}
+}
+
+function expandAll(lines: Array<number>, index: number) {
+	const textEditor = vscode.window.activeTextEditor;
+	if (textEditor !== undefined) {
+		const lineNumber = lines[index];
+		textEditor.selection = new vscode.Selection(lineNumber, 0, lineNumber, 0);
+		vscode.commands.executeCommand('editor.unfold').then(() => {
+			if (index < lines.length - 1) {
+				expandAll(lines, index + 1);
+			}
+		});
+	}
+}
+
 export function deactivate() {}
