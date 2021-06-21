@@ -3,6 +3,7 @@
 	"displayName": "DocCol",
 	"description": "Collapse Rust doc-comments easily.",
 	"version": "0.0.1",
+	"publisher": "LaciSap",
 	"engines": {
 		"vscode": "^1.57.0"
 	},
