@@ -2,7 +2,7 @@
 	"name": "doccol",
 	"displayName": "DocCol",
 	"description": "Collapse Rust doc-comments easily.",
-	"version": "0.0.1",
+	"version": "0.1.0",
 	"publisher": "LaciSap",
 	"repository": {
 		"type": "git",
@@ -16,6 +16,7 @@
 	],
 	"activationEvents": [
 		"onCommand:doccol.collapseDocs",
+		"onCommand:doccol.collapseTests",
 		"onCommand:doccol.expandDocs"
 	],
 	"main": "./dist/extension.js",
@@ -24,6 +25,10 @@
 			{
 				"command": "doccol.collapseDocs",
 				"title": "Collapse Docs"
+			},
+			{
+				"command": "doccol.collapseTests",
+				"title": "Collapse Tests"
 			},
 			{
 				"command": "doccol.expandDocs",

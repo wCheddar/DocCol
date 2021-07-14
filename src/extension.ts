@@ -8,6 +8,11 @@ export function activate(context: vscode.ExtensionContext) {
 		collapseAll(docStarts, 0);
 	});
 
+	let collapseTests = vscode.commands.registerCommand('doccol.collapseTests', () => {
+		const testLines = findTests();
+		collapseAll(testLines, 0);
+	});
+
 	let expandDocs = vscode.commands.registerCommand('doccol.expandDocs', () => {
 		const docLines = findDocs();
 		const docStarts = getStartOfGroups(docLines);
@@ -15,6 +20,7 @@ export function activate(context: vscode.ExtensionContext) {
 	});
 
 	context.subscriptions.push(collapseDocs);
+	context.subscriptions.push(collapseTests);
 	context.subscriptions.push(expandDocs);
 }
 
@@ -26,7 +32,27 @@ function findDocs(): Array<number> {
 			const line = textEditor.document.lineAt(lineNumber);
 
 			if (line.text.trimLeft().startsWith("///") || line.text.startsWith("//!")) {
-				lineNumbers.push(lineNumber + 1);
+				lineNumbers.push(lineNumber);
+			}
+		}
+	}
+	return lineNumbers;
+}
+
+function findTests(): Array<number> {
+	var lineNumbers = Array();
+	const textEditor = vscode.window.activeTextEditor;
+	if (textEditor !== undefined) {
+		for (const lineNumber of Array.from(Array(textEditor.document.lineCount).keys())) {
+			const line = textEditor.document.lineAt(lineNumber);
+
+			if (line.text.trimLeft().startsWith("#[cfg(") && line.text.includes("test")) {
+				const nextLine = textEditor.document.lineAt(lineNumber + 1);
+				if (nextLine.text.includes("{")) {
+					lineNumbers.push(lineNumber + 1);
+				} else {
+					lineNumbers.push(lineNumber + 2);
+				}
 			}
 		}
 	}
